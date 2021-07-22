@@ -136,3 +136,72 @@ def ORB_kp_det(img):
 ```
 ![](https://i.imgur.com/7FZz7KR.png)
 
+
+
+---
+
+# 特徵提取&匹配
+
+## 特徵提取方式
+以常用的SIFT與其改良版RootSIFT進行實驗
+
+```python=
+def SIFT_extract(img, kps):
+    SIFT_extractor = cv2.SIFT_create()
+    (kps, SIFT_dp) = SIFT_extractor.compute(img, kps, np.array([]))
+
+    return SIFT_dp
+
+
+def RootSIFT_extract(img, kps):
+
+    SIFT_extractor = cv2.SIFT_create()
+    (kps, SIFT_dp) = SIFT_extractor.compute(img, kps, np.array([]))
+
+    if len(kps) > 0:
+        # L1-正規化
+        eps = 1e-7
+
+        SIFT_dp /= (SIFT_dp.sum(axis=1, keepdims=True) + eps)
+        # 取平方根
+        SIFT_dp = np.sqrt(SIFT_dp)
+
+    return SIFT_dp
+
+
+```
+## 特徵匹配
+
+* 先運用Keypoint detect出關鍵點
+```python= 
+# Get Keypoint(使用GFTT)
+kpsA = kpdt.GFTT_kp_det(img_grayA)
+kpsB = kpdt.GFTT_kp_det(img_grayB)
+```
+* 在針對關鍵點進行特徵提取
+```python= 
+# Feature extract(使用RootSIFT)
+dpA = RootSIFT_extract(img_grayA, kpsA)
+dpB = RootSIFT_extract(img_grayB, kpsB)
+```
+* 並匹配兩張不同影像之特徵
+```python=
+matcher = []
+# Euclidean distance
+cv2.DescriptorMatcher_create("BruteForce")
+#使用KNN(K=2)將兩個最相似的分為一組
+rawMatches = matcher.knnMatch(dpA, dpB, 2)
+```
+* 若距離差異小於0.8則歸為一組
+```python=
+for m in rawMatches:
+
+    print("#1:{} , #2:{}".format(m[0].distance, m[1].distance))
+
+    if len(m) == 2 and m[0].distance < m[1].distance * 0.8:
+
+        matches.append((m[0].trainIdx, m[0].queryIdx))
+```
+
+* 匹配結果
+![](https://i.imgur.com/lvAGZO3.jpg)
