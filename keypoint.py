@@ -39,7 +39,7 @@ def harris_kp_det(img, threshold):
     return kps
 
 
-def GFTT(img):
+def GFTT_kp_det(img):
     pts = cv2.goodFeaturesToTrack(
         img, maxCorners=300, qualityLevel=0.03, blockSize=3, minDistance=3)
 
@@ -51,7 +51,70 @@ def GFTT(img):
     return kps
 
 
-GFTT_kp = GFTT(img_gray)
+def SIFT_kp_det(img):
+    detector = cv2.SIFT_create()
+    kps = detector.detect(img)
+
+    return kps
+
+
+def STAR_kp_det(img):
+    detector = cv2.xfeatures2d.StarDetector_create()
+    kps = detector.detect(img)
+
+    return kps
+
+
+def MSER_area_det(img):
+    detector = cv2.MSER_create()
+    kps = detector.detect(img)
+
+    return kps
+
+
+def BRISK_kp_det(img):
+    detector = cv2.BRISK_create()
+    kps = detector.detect(img)
+
+    return kps
+
+
+def ORB_kp_det(img):
+    detector = cv2.ORB_create()
+    kps = detector.detect(img)
+
+    return kps
+
+
+ORB_kp = ORB_kp_det(img_gray)
+ORB_kp_img = cv2.drawKeypoints(img, ORB_kp, np.array(
+    []), (0, 255, 0))
+cv2.imshow("ORB_Keypoint", ORB_kp_img)
+
+BRISK_kp = BRISK_kp_det(img_gray)
+BRISK_kp_img = cv2.drawKeypoints(img, BRISK_kp, np.array(
+    []), (0, 255, 0))
+cv2.imshow("BRISK_Keypoint", BRISK_kp_img)
+
+
+MSER_kp = MSER_area_det(img_gray)
+MSER_kp_img = cv2.drawKeypoints(img, MSER_kp, np.array(
+    []), (0, 255, 0))
+cv2.imshow("MSER_Keypoint", MSER_kp_img)
+
+
+STAR_kp = STAR_kp_det(img_gray)
+STAR_kp_img = cv2.drawKeypoints(img, STAR_kp, np.array(
+    []), (0, 255, 0))
+cv2.imshow("STAR_Keypoint", STAR_kp_img)
+
+
+SIFT_kp = SIFT_kp_det(img_gray)
+SIFT_kp_img = cv2.drawKeypoints(img, SIFT_kp, np.array(
+    []), (0, 255, 0))
+cv2.imshow("SIFT_Keypoint", SIFT_kp_img)
+
+GFTT_kp = GFTT_kp_det(img_gray)
 GFTT_kp_img = cv2.drawKeypoints(img, GFTT_kp, np.array([]), (0, 255, 0))
 cv2.imshow("GFTT_Keypoint", GFTT_kp_img)
 
@@ -64,3 +127,15 @@ fast_kp_img = cv2.drawKeypoints(img, fast_kp, np.array(
     []), (0, 255, 0), cv2.DRAW_MATCHES_FLAGS_DEFAULT)
 cv2.imshow("Fast_Keypoint", fast_kp_img)
 cv2.waitKey(0)
+
+
+# def SURF_kp_det(img):
+#     detector = cv2.xfeatures2d_SURF.create(hessianThreshold=400)
+#     kps = detector.detect(img)
+
+#     return kps
+
+
+# SURF_kp = SURF_kp_det(img_gray)
+# SURF_kp_img = cv2.drawKeypoints(img, SURF_kp, np.array([]), (0, 255, 0))
+# cv2.imshow("SURF_Keypoint", SURF_kp_img)
